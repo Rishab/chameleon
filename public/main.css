@@ -1,0 +1,119 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: "Orbitron";
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: medium !important;
+}
+
+table th {
+  vertical-align: center !important;
+}
+
+.table {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.board {
+  padding-left: 5rem;
+  padding-right: 5rem;
+}
+
+tr td {
+  background-color: #fff;
+}
+
+h1 {
+  color: #217ea9;
+  padding: 1rem;
+  font-weight: bolder;
+}
+
+.rnd {
+  padding-bottom: 0rem;
+}
+
+.rnd-btn {
+  padding-bottom: 1rem;
+}
+
+.card-btn {
+  padding-bottom: 1rem;
+}
+
+.words tr:nth-child(even) td:nth-child(odd),
+.words tr:nth-child(odd) td:nth-child(even) {
+  background-color: #c4e7de;
+}
+
+.words td {
+  height: 10rem;
+  width: 5rem;
+  vertical-align: middle;
+  text-align: center;
+  border-color: black;
+  font-size: x-large;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.playerList tr td {
+  background-color: #f4fcff;
+  border-top: none;
+  padding: 0.25rem;
+  width: 1%;
+  white-space: nowrap;
+  word-wrap: break-word;
+  font-size: large;
+}
+
+.icon {
+  text-align: center;
+}
+
+.fa-crown {
+  color: #e2ba01;
+}
+
+.fa-hand-point-right {
+  color: black;
+}
+
+.left-text {
+  left: 0;
+  position: absolute;
+}
+
+.secretWordTitle {
+  padding-right: 1rem;
+  font-weight: bolder;
+}
+
+.secretWord {
+  color: #86c118;
+}
+col {
+  height: 100%;
+}
+.details {
+  background-color: #f4fcff;
+  height: 100vh;
+  width: 100%;
+}
+.curr-player {
+  float: right;
+  padding-right: 1rem;
+}
+
+.fa-fw {
+  padding-right: 10%;
+}

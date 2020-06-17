@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="main.css" />
+    <link rel="shortcut icon" href="zoo.png" />
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Orbitron">
+    <script
+      src="https://kit.fontawesome.com/09e5d19d1f.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="all.css" />
+    <title>Mascarade</title>
+  </head>
+  <body onload="load()">
+    <!--Table-->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col table-responsive board">
+          <h1 id="category" style="text-align: center;">
+            <strong>Category</strong>
+          </h1>
+          <table id="words" class="table table-bordered words"></table>
+          <h4 class="center">
+              <span id="secretWordTitle" class="secretWordTitle">Secret Word: </span>
+              <span id="secretWord" class="secretWord"></span>
+          </h4>
+        </div>
+
+        <div class="col col-lg-3 details">
+            <!-- Round Counter -->
+            <h1 style="text-align: center;" class="rnd">Round</h1>
+            <h1 style="text-align: center;" id="roundNumber">1</h1>
+            <!-- Categories Dropdown -->
+            <div class="center card-btn">
+              <button
+              class="btn btn-secondary btn-md dropdown-toggle ml-5 mr-5"
+              id="categories-dd"
+              type="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="true"
+              >
+              Categories
+              </button>
+              <div class="dropdown-menu"></div>
+              <!-- Randomize Button -->
+              <button type="button" id="random-btn" class="btn btn-primary ml-5 mr-5">
+                Randomize
+              </button>            
+            </div>
+            
+            <!-- Round Buttons -->
+            <div class="center rnd-btn">
+                <button type="button" id="start-btn" class="btn btn-primary">Start Round</button>
+            </div>
+          <h4 style="text-align: center;"><i class="fas fa-users fa-fw"></i>Players</h4>
+          <hr />
+          <div class="container table-responsive">
+            <table id="playerList" class="table playerList">
+            </table>
+          </div>
+          <h4 class="center">
+            <span id="LobbyName" class="secretWordTitle">Lobby Name: </span>
+            <span id="LobbyID" class="secretWord"></span>
+        </h4>
+          <div class="center rnd-btn">
+            <button type="button" id="complete-btn" class="btn btn-primary">Round Completed</button>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+    <!--Table-->
+  </body>
+  <script type="text/javascript" src="categories.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+</html>
