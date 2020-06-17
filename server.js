@@ -2,10 +2,14 @@ const path = require("path");
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
-const { getLobbies, createLobby } = require("./utils/lobby");
 const {
-  createPlayer
-} = require("./utils/players");
+  lobbyExists,
+  getLobby,
+  getLobbies,
+  createLobby,
+  joinLobby,
+} = require("./utils/lobby");
+const { createPlayer } = require("./utils/players");
 
 const app = express();
 const server = http.createServer(app);
@@ -14,44 +18,51 @@ const io = socketio(server);
 // Set static folder
 app.use(express.static(path.join(__dirname, "public")));
 
-//Run when client connects
+// Run when client connection is established
 io.on("connection", (socket) => {
   console.log("A new player has connected");
-  
+
   // Player is creating or joining a lobby
   socket.on("joinLobby", ({ username, lobbyName }) => {
-      // Create a new player
-      const player = 
-    if (!lobbyExists) {
-      const lobby = createLobby(lobbyName, user.id);
+    // Create a new player
+    const player = createPlayer(socket.id, username);
+    // Check to see if a new lobby should be created
+    let lobby;
+    if (!lobbyExists(lobbyName)) {
+      lobby = createLobby(lobbyName, player);
     }
-    // create a user
-    const user = userJoin(socket.id, username, lobbyName);
-    console.log(getLobbies());
-    console.log(user);
-    // join the lobby
-    socket.join(user.lobbyName);
+    // Lobby already exists, connect the player
+    else {
+      lobby = joinLobby(lobbyName, player);
+    }
+    console.log(lobby);
+    console.log(player);
 
-    socket.emit("message", "Test join");
-    //single client
-    console.log("joined lobby");
-    //Broadcast when a user connects
+    // Join the lobby
+    socket.join(lobbyName);
+
+    // Broadcast when a player connects
     socket.broadcast
-      .to(user.lobbyName)
-      .emit("message", `${user.username} has joined the game`);
+      .to(lobbyName)
+      .emit("message", `${player.playerName} has joined the game`);
 
-    // Send users and room info
-    io.to(user.lobbyName).emit("players", {
-      lobby: user.lobbyName,
-      users: getPlayers(user.lobbyName),
-      currentPlayer: getCurrentPlayer(),
+    // Send players and room info
+    io.to(lobbyName).emit("players", {
+      players: lobby.players,
+      currentPlayer: lobby.currentPlayer,
     });
   });
 
-  socket.on("category", (category) => {
-    const user = getCurrentUser(socket.id);
-
-    io.to(user.lobbyName).emit("category", category);
+  socket.on("category", (category, lobbyName) => {
+    console.log(getLobbies());
+    const lobby = getLobby(lobbyName);
+    console.log(lobby);
+    lobby.category = category;
+    console.log(socket.id);
+    console.log(category);
+    if (socket.id + "" == lobby.lobbyLeader.ID) {
+      io.to(lobbyName).emit("category", category);
+    }
   });
 
   socket.on("start", (word) => {
@@ -71,18 +82,18 @@ io.on("connection", (socket) => {
 
   //Runs when client disconnects
   socket.on("disconnect", () => {
-    const user = userLeave(socket.id);
-    if (user) {
-      io.to(user.lobbyName).emit(
-        "message",
-        `${user.username} has left the game`
-      );
-      io.to(user.lobbyName).emit("players", {
-        lobby: user.lobbyName,
-        users: getPlayers(user.lobbyName),
-        currentPlayer: getCurrentPlayer(),
-      });
-    }
+    // const user = userLeave(socket.id);
+    // if (user) {
+    //   io.to(user.lobbyName).emit(
+    //     "message",
+    //     `${user.username} has left the game`
+    //   );
+    //   io.to(user.lobbyName).emit("players", {
+    //     lobby: user.lobbyName,
+    //     users: getPlayers(user.lobbyName),
+    //     currentPlayer: getCurrentPlayer(),
+    //   });
+    // }
     // io.emit("message", "A user has left the chat");
   });
   //broadcast to everyone

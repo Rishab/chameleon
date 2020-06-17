@@ -1,6 +1,6 @@
 const socket = io();
+var lobbyName;
 var category = "";
-var players = [];
 var roundNumber = 1;
 const startButton = document.getElementById("start-btn");
 const randomButton = document.getElementById("random-btn");
@@ -44,14 +44,11 @@ socket.on("category", (category) => {
 });
 
 randomButton.addEventListener("click", (e) => {
-  if (this.category != "") {
-    return;
-  }
   e.preventDefault();
   categoryNames = Object.keys(categories);
   var rand = Math.floor(Math.random() * categoryNames.length);
   const category = categoryNames[rand];
-  socket.emit("category", category);
+  socket.emit("category", category, lobbyName);
 });
 
 socket.on("start", (word) => {
@@ -128,32 +125,30 @@ function handleConnection() {
   username = getCookie("username");
   lobbyName = getCookie("lobbyName");
   socket.emit("joinLobby", { username, lobbyName });
+  outputLobbyName(lobbyName);
 }
 
-socket.on("players", ({ lobby, users, currentPlayer }) => {
-  console.log(currentPlayer);
-  outputLobbyName(lobby);
-  outputPlayersList(users, currentPlayer);
+socket.on("players", ({ players, currentPlayer }) => {
+  outputPlayersList(players, currentPlayer);
 });
 
 function outputLobbyName(lobby) {
-  console.log(lobby);
   document.getElementById("LobbyID").innerHTML = lobby;
 }
 
-function outputPlayersList(users, currentPlayer) {
-  console.log(users);
+function outputPlayersList(players, currentPlayer) {
+  console.log(currentPlayer);
   var table = document.getElementById("playerList");
   table.innerHTML = "";
-  for (var i = 0; i < users.length; i++) {
+  for (var i = 0; i < players.length; i++) {
     let newRow = table.insertRow(-1);
     let pointerIcon = newRow.insertCell(-1);
     pointerIcon.id = "pointer" + i;
-    if (currentPlayer == i) {
+    if (currentPlayer == players[i].ID) {
       pointerIcon.innerHTML = `<i class="fas fa-hand-point-right"></i>`;
     }
     let player = newRow.insertCell(-1);
-    player.innerHTML = users[i]["username"];
+    player.innerHTML = players[i].name;
     if (i == 0) {
       let crown = newRow.insertCell(-1);
       crown.innerHTML = `<i class="fas fa-crown"></i>`;

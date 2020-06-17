@@ -1,8 +1,8 @@
 const players = [];
 
 // Create new player when someone creates or joins a lobby
-function createPlayer(id, playername) {
-  const player = { id, playername };
+function createPlayer(ID, name) {
+  const player = { ID, name };
   players.push(player);
   return player;
 }
