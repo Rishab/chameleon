@@ -1,4 +1,5 @@
 const socket = io();
+var joinForm = document.getElementById("join-form");
 
 function details(username, lobbyName) {
   return { username, lobbyName };
@@ -14,20 +15,33 @@ function setCookie(cname, cvalue, exdays) {
 function createGame(form) {
   let username = form.username.value;
   let lobbyName = form.lobbyName.value;
+  socket.emit("createLobby", { username, lobbyName });
   console.log(username);
   console.log(lobbyName);
   setCookie("username", username, 1);
   setCookie("lobbyName", lobbyName, 1);
 }
 
-function joinGame(form) {
-  let username = form.joinUsername.value;
-  let lobbyName = form.joinedLobby.value;
-  console.log(username);
-  console.log(lobbyName);
-  setCookie("username", username, 1);
-  setCookie("lobbyName", lobbyName, 1);
+function joinGame() {
+  console.log(socket.id);
+  let lobbyName = joinForm.joinedLobby.value.toUpperCase();
+  console.log("Joining Game: " + lobbyName);
+  socket.emit("checkGame", lobbyName);
+  return false;
 }
+
+socket.on("checkGameResult", (result) => {
+  console.log("Result of checking game " + result);
+  if (!result) {
+    window.location.replace("");
+  } else {
+    let username = joinForm.joinUsername.value;
+    let lobbyName = joinForm.joinedLobby.value.toUpperCase();
+    setCookie("username", username, 1);
+    setCookie("lobbyName", lobbyName, 1);
+    window.location.replace("chameleon.html");
+  }
+});
 
 function randomString(length, chars) {
   var result = "";
@@ -41,3 +55,12 @@ function load() {
   console.log(rString);
   document.getElementById("lobbyName").value = rString;
 }
+
+// Listen to submit event on the <form> itself!
+$("#join-form").submit(function (e) {
+  e.preventDefault();
+  console.log("prevented");
+  let lobbyName = joinForm.joinedLobby.value.toUpperCase();
+  socket.emit("checkGame", lobbyName);
+  return false;
+});

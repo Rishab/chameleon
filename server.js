@@ -8,12 +8,19 @@ const {
   getLobbies,
   createLobby,
   joinLobby,
+  leaveLobby,
+  updateCurrentPlayer,
+  updateGameDetails,
+  checkPlayerCount,
 } = require("./utils/lobby");
-const { createPlayer } = require("./utils/players");
+const { createPlayer, getLobbyName } = require("./utils/players");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+const io = socketio(server, {
+  pingInterval: 300000,
+  pingTimeout: 600000,
+});
 
 // Set static folder
 app.use(express.static(path.join(__dirname, "public")));
@@ -25,76 +32,136 @@ io.on("connection", (socket) => {
   // Player is creating or joining a lobby
   socket.on("joinLobby", ({ username, lobbyName }) => {
     // Create a new player
-    const player = createPlayer(socket.id, username);
-    // Check to see if a new lobby should be created
-    let lobby;
-    if (!lobbyExists(lobbyName)) {
-      lobby = createLobby(lobbyName, player);
-    }
-    // Lobby already exists, connect the player
-    else {
-      lobby = joinLobby(lobbyName, player);
-    }
-    console.log(lobby);
+    const player = createPlayer(socket.id, username, lobbyName);
+    // // Check to see if a new lobby should be created
+    // let lobby;
+    // if (!lobbyExists(lobbyName)) {
+    //   lobby = createLobby(lobbyName, player);
+    // }
+    // // Lobby already exists, connect the player
+    // else {
+    let lobby = joinLobby(lobbyName, player);
+    // }
+    // console.log(lobby);
     console.log(player);
 
     // Join the lobby
     socket.join(lobbyName);
+
+    socket.lobbyID = lobbyName;
 
     // Broadcast when a player connects
     socket.broadcast
       .to(lobbyName)
       .emit("message", `${player.playerName} has joined the game`);
 
+    let tooManyPlayers = checkPlayerCount(lobby);
     // Send players and room info
     io.to(lobbyName).emit("players", {
       players: lobby.players,
       currentPlayer: lobby.currentPlayer,
+      tooManyPlayers,
     });
   });
 
-  socket.on("category", (category, lobbyName) => {
-    console.log(getLobbies());
-    const lobby = getLobby(lobbyName);
-    console.log(lobby);
-    lobby.category = category;
+  socket.on("createLobby", ({ username, lobbyName }) => {
+    console.log("creating game");
+    // const player = createPlayer(socket.id, username, lobbyName);
+    let lobby = createLobby(lobbyName);
+    socket.broadcast
+      .to(lobbyName)
+      .emit("message", `${username} has created the game`);
+
+    let tooManyPlayers = checkPlayerCount(lobby);
+    // Send players and room info
+    io.to(lobbyName).emit("players", {
+      players: lobby.players,
+      currentPlayer: lobby.currentPlayer,
+      tooManyPlayers,
+    });
+  });
+
+  socket.on("checkGame", (lobbyName) => {
     console.log(socket.id);
-    console.log(category);
-    if (socket.id + "" == lobby.lobbyLeader.ID) {
+    console.log("Checking Game: " + lobbyName);
+    console.log("Does it exist? " + lobbyExists(lobbyName));
+    io.to(socket.id).emit("checkGameResult", lobbyExists(lobbyName));
+  });
+
+  // Category selected or randomize button selected by a player
+  socket.on("category", (category, lobbyName) => {
+    // Change the category if lobbyLeader made request and round is not in-progress
+    const lobby = getLobby(lobbyName);
+    if (socket.id + "" == lobby.lobbyLeader && !lobby.inProgress) {
+      lobby.category = category;
       io.to(lobbyName).emit("category", category);
     }
   });
 
-  socket.on("start", (word) => {
-    const user = getCurrentUser(socket.id);
-    io.to(user.lobbyName).emit("start", word);
+  // Start the round: lock the word, category, and chameleon
+  socket.on("start", (word, lobbyName) => {
+    const lobby = getLobby(lobbyName);
+    if (
+      socket.id + "" == lobby.lobbyLeader &&
+      !lobby.inProgress &&
+      lobby.category != ""
+    ) {
+      if (lobby.numPlayers < 3) {
+        let numPlayers = lobby.numPlayers;
+        io.to(lobbyName).emit("needMorePlayers", numPlayers);
+      } else {
+        var chameleon =
+          lobby.players[Math.floor(Math.random() * lobby.players.length)].ID;
+        sendWord = lobby.players.filter((players) => players.ID != chameleon);
+        // console.log(sendWord);
+        sendWord.forEach((player) => {
+          io.to(player.ID).emit("start", lobby.category, word);
+        });
+        io.to(chameleon).emit("chameleon");
+        lobby.word = word;
+        lobby.chameleon = chameleon;
+        lobby.inProgress = true;
+      }
+    }
   });
+  // Round complete -> update game details
+  socket.on("complete", (lobbyName) => {
+    const lobby = getLobby(lobbyName);
+    if (
+      socket.id + "" == lobby.lobbyLeader &&
+      lobby.inProgress &&
+      lobby.category != ""
+    ) {
+      updateCurrentPlayer(lobbyName);
+      updateGameDetails(lobbyName);
 
-  socket.on("complete", () => {
-    const user = getCurrentUser(socket.id);
-
-    io.to(user.lobbyName).emit("complete", {
-      lobby: user.lobbyName,
-      users: getPlayers(user.lobbyName),
-      currentPlayer: updateCurrentPlayer(false),
-    });
+      io.to(lobbyName).emit("complete", {
+        players: lobby.players,
+        currentPlayer: lobby.currentPlayer,
+        roundNumber: lobby.roundNumber,
+      });
+    }
   });
 
   //Runs when client disconnects
   socket.on("disconnect", () => {
-    // const user = userLeave(socket.id);
-    // if (user) {
-    //   io.to(user.lobbyName).emit(
-    //     "message",
-    //     `${user.username} has left the game`
-    //   );
-    //   io.to(user.lobbyName).emit("players", {
-    //     lobby: user.lobbyName,
-    //     users: getPlayers(user.lobbyName),
-    //     currentPlayer: getCurrentPlayer(),
-    //   });
-    // }
-    // io.emit("message", "A user has left the chat");
+    console.log("player disconnecting");
+    const player = socket.id;
+    let lobbyName = getLobbyName(player);
+    // console.log("lobbyName: " + lobbyName);
+    if (lobbyName != null) {
+      let playerCount = leaveLobby(lobbyName, player);
+      if (playerCount != 0) {
+        const lobby = getLobby(lobbyName);
+        let tooManyPlayers = checkPlayerCount(lobby);
+        io.to(lobbyName).emit("players", {
+          players: lobby.players,
+          currentPlayer: lobby.currentPlayer,
+          tooManyPlayers,
+        });
+      }
+    }
+    // console.log(player);
   });
   //broadcast to everyone
   //io.emit()

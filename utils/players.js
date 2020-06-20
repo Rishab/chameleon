@@ -1,10 +1,24 @@
-const players = [];
+const players = {};
 
 // Create new player when someone creates or joins a lobby
-function createPlayer(ID, name) {
-  const player = { ID, name };
-  players.push(player);
+function createPlayer(ID, name, lobbyName) {
+  console.log("Player created");
+  console.log(lobbyName);
+  let playerDetails = {
+    name: name,
+    lobbyName: lobbyName,
+  };
+  console.log(playerDetails);
+  players[ID] = playerDetails;
+  let player = { ID: ID, name: name };
+  console.log(player);
   return player;
+}
+
+function getLobbyName(ID) {
+  if (players[ID] != null) {
+    return players[ID].lobbyName;
+  }
 }
 
 // function playerJoin(id, playername, lobbyName) {
@@ -35,6 +49,7 @@ function createPlayer(ID, name) {
 
 module.exports = {
   createPlayer,
+  getLobbyName,
   // getCurrentplayer,
   // playerLeave,
   // getPlayers,

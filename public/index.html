@@ -8,8 +8,221 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     />
+    <script
+      src="https://kit.fontawesome.com/09e5d19d1f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+      /* body {
+        background: linear-gradient(
+            45deg,
+            rgba(66, 183, 245, 0.8) 0%,
+            rgba(66, 245, 189, 0.4) 100%
+          )
+          no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+      }
+      .underlineHover:after {
+        display: block;
+        left: 0;
+        bottom: -10px;
+        width: 0;
+        height: 2px;
+        background-color: #16bdd7;
+        content: "";
+        transition: width 0.2s;
+      }
+      .nav {
+        padding: 10px 20px;
+      }
+      .btn {
+        background: rgba(66, 183, 245, 1);
+        border-color: rgba(66, 183, 245, 1);
+        padding: 10px 20px;
+        border-radius: 5px;
+        position: relative;
+        flex: 1 1 auto;
+        width: 100%;
+      }
+      .text-center {
+        padding: 0px 20px;
+      }
+      .form-control {
+        background-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      .form-wrapper {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        vertical-align: middle;
+        margin-left: auto;
+        margin-right: auto;
+        border: 0.1rem solid white;
+        border-radius: 0.3rem;
+        max-width: 350px;
+        min-height: 310px;
+        background-color: white;
+      }
+
+      .form-group {
+        padding-bottom: 5rem;
+      }
+
+      .nav-tabs {
+        text-align: center;
+
+        display: inline-block;
+        list-style-type: none;
+      }
+
+      .form-wrapper li {
+      }
+
+      .form-wrapper .nav-tabs > li > a {
+        color: black;
+      }
+
+      .form-wrapper .nav-tabs > li.active > a {
+        /* background-color: #2abb9b; */
+      /* border-color: #2abb9b; */
+      /* color: white; */
+      /* }  */
+
+      /* .form-wrapper .nav-tabs > li > a,
+      .form-wrapper .nav-tabs > li.active > a {
+        width: 160px;
+        text-align: center;
+        border-radius: 0;
+      } */
+
+      /* .form-wrapper .nav-tabs {
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+      } */
+
+      /* .form-wrapper .btn-custom {
+        width: 100%;
+        background-color: #2abb9b;
+        border-color: #2abb9b;
+        margin-bottom: 0.5em;
+        border-radius: 0;
+      } */
+
+      /* .form-wrapper .btn-custom:hover {
+        width: 100%;
+        background-color: #48a497;
+        border-color: #2abb9b;
+      } */
+      /* .form-wrapper .form-group {
+        padding: 5px 20px;
+      } */
+    </style>
   </head>
   <body onload="load()">
+    <!-- <br />
+    <div class="container">
+      <div class="form-wrapper">
+        <ul class="nav justify-content-center">
+          <li class="nav-item">
+            <a
+              class="nav-link active underlineHover"
+              data-toggle="tab"
+              href="#joingame"
+              >Join Game</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link underlineHover"
+              data-toggle="tab"
+              href="#creategame"
+              >Create Game</a
+            >
+          </li>
+        </ul> -->
+
+    <!-- <ul class="nav nav-tabs" role="tablist">
+          <li class="active">
+            <a href="#joingame" data-toggle="tab">Join Game</a>
+          </li>
+          <li><a href="#creategame" data-toggle="tab">Create Game</a></li>
+        </ul> -->
+    <!-- Join Game Form Div -->
+    <!-- <div class="tab-content">
+          <div role="tabpanel" class="tab-pane fade in active show" id="">
+            <!-- Join Game Form -->
+    <!-- <form class="form-horizontal" action="chameleon.html">
+              <div class="form-group">
+                <h6>Username</h6>
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control usernameInput"
+                    id="username"
+                    maxlength="14"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <h6>Lobby Name</h6>
+                <div class="input-group">
+                  <input
+                    type="password"
+                    name="login_password"
+                    class="form-control"
+                    required="required"
+                  />
+                </div>
+              </div>
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                  Join Game
+                </button>
+              </div>
+            </form>
+          </div>
+          <div role="tabpanel" class="tab-pane fade" id="creategame">
+            <form class="form-horizontal" method="post" action="chameleon.html">
+              <div class="form-group">
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-user"></i>
+                  </div>
+                  <input
+                    type="text"
+                    name="register_username"
+                    class="form-control"
+                    placeholder="Username"
+                    required="required"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="fa fa-lock"></i>
+                  </div>
+                  <input
+                    type="password"
+                    name="register_cpassword"
+                    class="form-control"
+                    placeholder="Confirm Password"
+                    required="required"
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
     <h1 style="text-align: center;">Create Lobby</h1>
     <form action="chameleon.html" id="create-form" class="container">
       <div class="form-group">
@@ -70,11 +283,7 @@
           required
         />
       </div>
-      <button
-        type="submit"
-        onclick="joinGame(document.getElementById('join-form'))"
-        class="btn btn-primary"
-      >
+      <button type="submit" class="btn btn-primary">
         Join Game
       </button>
     </form>
